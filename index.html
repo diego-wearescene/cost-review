@@ -1166,6 +1166,8 @@ window.__bootApp = function(){
   }
 
   renderAll();
+  // Safety net: trigger a second render after another paint cycle in case canvas measured wrong
+  setTimeout(() => { try { renderAll(); } catch(e){} }, 120);
 };
 </script>
 </div>
@@ -1214,6 +1216,8 @@ window.__bootApp = function(){
       document.getElementById('dataset').textContent = json;
       gate.style.display = 'none';
       app.style.display = 'block';
+      // Wait for the browser to compute layout (canvas needs real dimensions before Chart.js draws on it)
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       window.__bootApp();
     } catch (err) {
       loadEl.style.display = 'none';
